@@ -308,7 +308,7 @@ class LiputanController extends Controller
     {
         Liputan::findOrFail($id)->delete();
 
-        return redirect('/liputan/listrsvp/'. $request->judul);
+        return redirect()->back();
 
     }
 }
