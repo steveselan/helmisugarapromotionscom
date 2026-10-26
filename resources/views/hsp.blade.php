@@ -20,7 +20,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <!-- CSS ANIMASI BACKGROUND & INFINITE LOGO SLIDER -->
     <style>
-
         @keyframes neonPulse {
             0%, 100% {
                 filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 20px rgba(236, 72, 153, 0.4));
@@ -28,7 +27,7 @@
             }
             50% {
                 filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 30px rgba(56, 189, 248, 0.6));
-                transform: scale(1.02); /* Sedikit membesar hidup */
+                transform: scale(1.02);
             }
         }
 
@@ -37,29 +36,19 @@
             transition: transform 0.3s ease;
         }
 
-        /* Efek saat kursor diarahkan ke logo (Hover) */
         .logo-neon-modern:hover {
             transform: scale(1.05);
-            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 1)) drop-shadow(0 0 35px rgba(236, 72, 153, 0.8));
+            filter: drop-shadow(0 0 15px rgba(255, 215, 1)) drop-shadow(0 0 35px rgba(236, 72, 153, 0.8));
         }
 
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Background Statis yang Ringan dan Bersih */
+        .static-bg {
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(147, 51, 234, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%);
         }
-        .animated-bg {
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #312e81, #581c87, #7c2d12);
-            background-size: 500% 500%;
-            animation: gradientMove 12s ease infinite;
-        }
-        @keyframes floatGlow {
-            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; }
-            50% { transform: translateY(-30px) scale(1.15); opacity: 1; }
-        }
-        .spotlight-1 { animation: floatGlow 5s ease-in-out infinite; }
-        .spotlight-2 { animation: floatGlow 8s ease-in-out infinite reverse; }
-        .spotlight-3 { animation: floatGlow 6s ease-in-out infinite; }
 
         @keyframes marquee {
             0% { transform: translateX(0%); }
@@ -80,9 +69,9 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
         }
-    </style>
+        </style>
 </head>
-<body class="animated-bg text-slate-100 font-sans antialiased relative overflow-x-hidden" x-data="{ openModal: false, activeEvent: {}, mobileMenu: false }">
+<body class="static-bg text-slate-100 font-sans antialiased relative overflow-x-hidden" x-data="{ openModal: false, activeEvent: {}, mobileMenu: false }">
 
     <!-- EFEK CAHAYA LAMPU PANGGUNG -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
