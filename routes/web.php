@@ -19,6 +19,8 @@ Route::post('/liputan/checkemail', [LiputanController::class, 'checkemail'])->na
 Route::get('/liputan/thankyou/{judul}', [LiputanController::class, 'thankyou']);
 Route::delete('/liputan/listrsvp/{id}', [LiputanController::class, 'destroy'])->name('liputan.destroy');
 
+Route::resource('liputan', LiputanController::class);
+
 Route::get('/dashboard', function () {
     return view('pages.beranda');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -38,8 +40,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/undangan/{id}/edit', [UndanganController::class, 'edit'])->name('undangan.edit');
     Route::get('/undangan/{id}/update', [UndanganController::class, 'update'])->name('undangan.update');
     Route::get('/undangan/listrsvpundangan/{judul}', [UndanganController::class, 'listrsvpundangan']);
-
-    Route::resource('liputan', LiputanController::class);
 
     Route::resource('/ratecard', RatecardController::class);
     Route::get('/ratecard/create', [RatecardController::class, 'create'])->name('media.create');
