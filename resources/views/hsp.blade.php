@@ -133,7 +133,7 @@
 
                     <!-- 2. TAMPILAN MOBILE / HP (Square) -->
                     <!-- Menggunakan tag <img> asli dengan 'w-full h-auto object-contain' agar gambar kotak tampil pas di tengah tanpa spasi hitam berlebih -->
-                    <div class="block md:hidden w-full bg-black py-4">
+                    <div class="block md:hidden w-full bg-black py-0">
                         <img src="{{ asset('gambar_banner/' . $newevent->gambar2) }}" alt="Mobile Banner" class="w-full h-auto object-contain mx-auto" fetchpriority="high" loading="eager">
                     </div>
 
