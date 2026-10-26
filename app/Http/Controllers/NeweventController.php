@@ -28,7 +28,7 @@ class NeweventController extends Controller
     public function create()
     {
          $kategori = Kategori::get();
-        return view('pages.newevent.addNewEvent',[
+        return view('pages.newevent.addNewevent',[
             'listkategori' => $kategori
         ]);
     }

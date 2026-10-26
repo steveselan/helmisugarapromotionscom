@@ -42,7 +42,7 @@
                                     @else <span class="badge badge-success text-light">Konser</span>
                                     @endif
                                 </p>
-                                <p class="btn-primary font-weight-bolder">
+                                <p class="btn-{{ $warna }} font-weight-bolder">
                                     {{ $keterangan }}
                                 </p>
                             </div>

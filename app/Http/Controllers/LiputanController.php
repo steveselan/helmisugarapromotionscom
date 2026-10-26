@@ -18,7 +18,6 @@ class LiputanController extends Controller
 
     public function formrsvp($judul)
     {
-        // $dataUndangan = Undangan::join('tb_newevent','tb_undangan.event_id','=','tb_newevent.id_event')->findOrFail($id);
         $dataUndangan = Undangan::join('tb_newevent','tb_undangan.event_id','=','tb_newevent.id_event')->where('judul', $judul)->firstOrFail();
         return view('checkmail',[
             'form_rsvp' => $dataUndangan
@@ -37,8 +36,7 @@ class LiputanController extends Controller
         $dataUndangan = Undangan::join('tb_newevent','tb_undangan.event_id','=','tb_newevent.id_event')
                                 ->where('tb_undangan.id_undangan', $idUndanganAktif)
                                 ->firstOrFail();
-
-        
+                                
         // Cek Kapasitas / kuota event
         $batasKapasitas = $dataUndangan->kapasitas;
 
@@ -50,6 +48,7 @@ class LiputanController extends Controller
             return view('thankyou',[
                 'data_undangan' => $dataUndangan,
                 'keterangan' => 'Mohon maaf, kuota pendaftaran event ini sudah penuh',
+                'warna' => 'danger'
             ]);
         }
 
@@ -57,7 +56,6 @@ class LiputanController extends Controller
         $sudahTerdaftar = Liputan::where('email', $request->email)
                                 ->where('undangan_id', $idUndanganAktif)
                                 ->first();
-
         // dd($sudahTerdaftar);
 
         if ($sudahTerdaftar)
@@ -68,7 +66,8 @@ class LiputanController extends Controller
                 // Langsung arahkan ke halaman "sudah terdaftar" (atau kembalikan pesan bahwa email sudah terdaftar)
                 return view('thankyou', [
                     'data_undangan' => $dataUndangan,
-                    'keterangan' => 'Email anda sudah terdaftar untuk event ini!'
+                    'keterangan' => 'Email anda sudah terdaftar untuk event ini!',
+                    'warna' => 'success'
                 ]);
             }else{
                     // untuk undangan Konser
@@ -77,7 +76,8 @@ class LiputanController extends Controller
                         // Langsung arahkan ke halaman "sudah terdaftar" (atau kembalikan pesan bahwa email sudah terdaftar)
                         return view('thankyou', [
                             'data_undangan' => $dataUndangan,
-                            'keterangan' => 'Email anda sudah terdaftar untuk event ini!'
+                            'keterangan' => 'Email anda sudah terdaftar untuk event ini!',
+                            'warna' => 'success'
                         ]);
                     }else{
                         return view('formrsvp', [
@@ -89,23 +89,24 @@ class LiputanController extends Controller
                         ]);
                     }
             }
-        } 
+        }else{
+            // 3. JIKA BELUM TERDAFTAR DI EVENT INI:
+            // Cek apakah dia punya riwayat profil dari event LAIN (misal: event PC sebelumnya) 
+            // agar nama & nomor HP-nya bisa otomatis terisi (Autofill) di form
+            $profilLama = Liputan::where('email', $request->email)
+                                ->select('nama', 'email', 'phone', 'media', 'jabatan')
+                                ->orderBy('updated_at', 'desc')
+                                ->first();
+            
+                return view('formrsvp', [
+                'data_undangan' => $dataUndangan,
+                'cek_email' => $profilLama, // Membawa data Nama/Phone lama untuk autofill (jika ada)
+                'email' => $request->email,
+                'input_data_null' => '',
+                'undangan' => $idUndanganAktif
+            ]);
+        }
 
-        // 3. JIKA BELUM TERDAFTAR DI EVENT INI:
-        // Cek apakah dia punya riwayat profil dari event LAIN (misal: event PC sebelumnya) 
-        // agar nama & nomor HP-nya bisa otomatis terisi (Autofill) di form
-        $profilLama = Liputan::where('email', $request->email)
-                            ->select('nama', 'email', 'phone', 'media', 'jabatan')
-                            ->orderBy('updated_at', 'desc')
-                            ->first();
-        
-        return view('formrsvp', [
-            'data_undangan' => $dataUndangan,
-            'cek_email' => $profilLama, // Membawa data Nama/Phone lama untuk autofill (jika ada)
-            'email' => $request->email,
-            'input_data_null' => '',
-            'undangan' => $idUndanganAktif
-        ]);
     }
 
     /**
@@ -121,76 +122,97 @@ class LiputanController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // 1. Validasi dinamis berdasarkan jenis undangan
+        $rules = [
             'email' => 'required|email|email:rfc,dns',
             'nama' => 'required|max:30',
             'phone' => 'required',
             'media' => 'required',
             'jabatan' => 'required',
-            'alamatweb' => 'required',
-            'input_berita' => 'array',
-            'input_berita.*' => 'string|max:255',
-        ]);
+            'jenis_undangan' => 'required',
+            'kode_undangan' => 'required',
+        ];
+
+        // Jika jenis undangannya Konser, validasi input_berita. Jika PC, validasi alamatweb.
+        if ($request->jenis_undangan == 'Konser') {
+            $rules['input_berita'] = 'required|array';
+            $rules['input_berita.*'] = 'required|string|max:255';
+        } else {
+            $rules['alamatweb'] = 'required';
+        }
+
+        $request->validate($rules);
 
         $judulUndangan = $request->judul;
 
-        // Contoh di Controller saat menyimpan/mengupdate data:
+        // Ambil data untuk dilempar ke halaman thank you jika di tolak
+        $dataUndangan = Undangan::join('tb_newevent','tb_undangan.event_id','=','tb_newevent.id_event')
+                            ->where('tb_undangan.judul', $judulUndangan)
+                            ->firstOrFail();
+        // filter dan blokir kata terlarang (Email atau Nama Media)
+        $blockedWords = ['film', 'movie', 'cinema', 'blogspot', 'motion', 'picture', 'histor', 'premiere'];
+
+        // Gabungkan String Email dan nama media yang di input lalu ubah ke huruf kecil (lowercase)
+        $stringToCheck = strtolower($request->email . ' ' . $request->media);
+
+        foreach($blockedWords as $word)
+            if(str_contains($stringToCheck, $word)){
+                // jika mengandung kata terlarang, arahkan ke halaman thank you dengan kailmat penolakan halus
+                return view('thankyou',[
+                    'data_undangan' => $dataUndangan,
+                    'keterangan' => 'Mohon maaf, saat ini alokasi kuota undangan khusus untuk kategori media yang Anda daftarkan telah sepenuhnya terisi. Terima kasih atas pengertian anda',
+                    'warna' => 'danger'
+                ]);
+            }
+
+        // 2. Olah data link berita (untuk Konser)
         $linkBerita = $request->input('input_berita');
-
-        // Jika input kosong, array kosong, atau isinya hanya string kosong, set jadi null
-        if (empty($linkBerita) || (count($linkBerita) == 1 && empty($linkBerita[0]))) {
-            $dataToSave['link1'] = null; 
-        } else {
-            // Ubah array link menjadi format JSON untuk disimpan ke database
-            $dataToSave['link1'] = json_encode(array_values(array_filter($linkBerita)));
-        }
-
-        // $arrayBerita = $request->input_berita;
-        if($request->jenis_undangan == 'PC')
-            {
-                Liputan::create([
-                    'email' => $request->email,
-                    'nama' => $request->nama,
-                    'phone' => $request->phone,
-                    'media' => $request->media,
-                    'jabatan' => $request->jabatan,
-                    'jenis_undangan' => $request->jenis_undangan,
-                    'undangan_id' => $request->kode_undangan,
-                    'link2' => $request->alamatweb,
-                    'jenis_media' => 'NP',
-                    'link1' => $dataToSave['link1']
-                ]);
-            }
-        else{
-            if($request->kode_liputan !== null){
-                    Liputan::where('id_liputan',$request->kode_liputan)->update([
-                        'email' => $request->email,
-                        'nama' => $request->nama,
-                        'phone' => $request->phone,
-                        'media' => $request->media,
-                        'jabatan' => $request->jabatan,
-                        'jenis_undangan' => $request->jenis_undangan,
-                        'undangan_id' => $request->kode_undangan,
-                        'link2' => $request->alamatweb,
-                        'jenis_media' => 'NP',
-                        'link1' => $dataToSave['link1']
-                ]);
-            }else{
-                Liputan::create([
-                        'email' => $request->email,
-                        'nama' => $request->nama,
-                        'phone' => $request->phone,
-                        'media' => $request->media,
-                        'jabatan' => $request->jabatan,
-                        'jenis_undangan' => $request->jenis_undangan,
-                        'undangan_id' => $request->kode_undangan,
-                        'link2' => $request->alamatweb,
-                        'jenis_media' => 'NP',
-                        'link1' => $dataToSave['link1']
-                    ]);
-            }
-        }
+        $jsonLink1 = null;
         
+        if (!empty($linkBerita)) {
+            $filteredBerita = array_filter($linkBerita, function($value) {
+                return !is_null($value) && trim($value) !== '';
+            });
+            if (!empty($filteredBerita)) {
+                $jsonLink1 = json_encode(array_values($filteredBerita));
+            }
+        }
+
+        // 3. Proses Simpan / Update ke Database
+        if ($request->jenis_undangan == 'PC') {
+            // Logika Simpan untuk Press Conference
+            Liputan::create([
+                'email' => $request->email,
+                'nama' => $request->nama,
+                'phone' => $request->phone,
+                'media' => $request->media,
+                'jabatan' => $request->jabatan,
+                'jenis_undangan' => $request->jenis_undangan,
+                'undangan_id' => $request->kode_undangan,
+                'link2' => $request->alamatweb,
+                'jenis_media' => 'NP',
+                'link1' => null
+            ]);
+        } else {
+            // Logika Simpan / Update untuk Konser
+            $dataUpdateOrCreate = [
+                'email' => $request->email,
+                'nama' => $request->nama,
+                'phone' => $request->phone,
+                'media' => $request->media,
+                'jabatan' => $request->jabatan,
+                'jenis_undangan' => $request->jenis_undangan,
+                'undangan_id' => $request->kode_undangan,
+                'link1' => $jsonLink1, // Simpan array link berita ke link1
+                'jenis_media' => 'NP',
+            ];
+
+            if ($request->kode_liputan !== null) {
+                Liputan::where('id_liputan', $request->kode_liputan)->update($dataUpdateOrCreate);
+            } else {
+                Liputan::create($dataUpdateOrCreate);
+            }
+        }
 
         return redirect('liputan/thankyou/' . $judulUndangan);
     }
@@ -202,7 +224,8 @@ class LiputanController extends Controller
         
         return view('thankyou',[
                     'data_undangan' => $dataUndangan,
-                    'keterangan' => 'Terima kasih! Data anda sudah terdaftar'
+                    'keterangan' => 'Terima kasih! Data anda sudah terdaftar',
+                    'warna' => 'success'
          ]);
     }
 
