@@ -160,7 +160,7 @@ class LiputanController extends Controller
                 // jika mengandung kata terlarang, arahkan ke halaman thank you dengan kailmat penolakan halus
                 return view('thankyou',[
                     'data_undangan' => $dataUndangan,
-                    'keterangan' => 'Mohon maaf, pendaftaran untuk kategori media Anda belum dapat diproses otomatis melalui sistem ini. Silakan berkoordinasi langsung dengan PIC kami di nomor WA <b>[081818919308]</b> untuk informasi ketersediaan kursi.',
+                    'keterangan' => 'Mohon maaf, pendaftaran untuk kategori media Anda belum dapat diproses otomatis melalui sistem ini. Silakan berkoordinasi langsung dengan PIC kami di nomor WA [0818-1891-9308] untuk informasi ketersediaan kursi.',
                     'warna' => 'danger'
                 ]);
             }
