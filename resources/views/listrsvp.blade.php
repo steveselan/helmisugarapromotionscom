@@ -100,9 +100,11 @@
                                                 <button type="button" class="btn btn-sm bg-gradient-danger text-white" data-toggle="modal" data-target="#hapus{{ $listdata->id_liputan }}" title="Delete">
                                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm bg-gradient-info text-white" data-toggle="modal" data-target="#edit{{ $listdata->id_liputan }}" title="Print">
-                                                <i class="fa fa-print" aria-hidden="true"></i>
-                                                </button>
+                                                <button type="button" class="btn btn-sm bg-gradient-info text-white" 
+    onclick="printStiker('{{ $listdata->id_liputan }}', '{{ $listdata->nama }}', '{{ $listdata->media }}', '{{ $listdata->phone }}', '{{ $listdata->jabatan }}', '{{ $data_undangan->judul }}')" 
+    title="Print">
+    <i class="fa fa-print" aria-hidden="true"></i>
+</button>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -321,6 +323,68 @@
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('sbadmin') }}/js/demo/datatables-demo.js"></script>
+
+    <!-- Area Stiker Tersembunyi yang Akan Dicetak -->
+<div id="print-area" style="display: none;">
+    <div class="stiker-container text-center">
+        
+        <p style="margin: 2px 0; font-size: 10px;">#<span id="p-id"></span></p>
+        <p style="margin: 2px 0; font-size: 11px;"><span id="p-nama"></span></p>
+        <p style="margin: 2px 0; font-size: 11px;"><span id="p-media"></span></p>
+        <p style="margin: 2px 0; font-size: 10px;"><span id="p-phone"></span></p>
+        <p style="margin: 2px 0; font-size: 10px;"><span id="p-jabatan"></span></p>
+    </div>
+</div>
+
+<!-- CSS Khusus Ukuran Stiker 5x4 cm -->
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+    #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 5cm;
+        height: 4cm;
+        display: block !important;
+    }
+    .stiker-container {
+        width: 5cm;
+        height: 4cm;
+        padding: 3mm;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+}
+@page {
+    size: 5cm 4cm;
+    margin: 0;
+}
+</style>
+
+<!-- JavaScript untuk Menjalankan Print -->
+<script>
+function printStiker(id, nama, media, phone, jabatan, judul) {
+    document.getElementById('p-id').innerText = id;
+    document.getElementById('p-nama').innerText = nama;
+    document.getElementById('p-media').innerText = media;
+    document.getElementById('p-phone').innerText = phone;
+    
+    let jabatanText = jabatan;
+    if(jabatan === 'JR') jabatanText = 'Jurnalis/Reporter';
+    else if(jabatan === 'PGVG') jabatanText = 'Photo/Videographer';
+    else if(jabatan === 'JRPG') jabatanText = 'Jurnalis & Photographer';
+    document.getElementById('p-jabatan').innerText = jabatanText;
+
+    window.print();
+}
+</script>
 
 </body>
 
