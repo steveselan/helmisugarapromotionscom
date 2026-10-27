@@ -325,45 +325,81 @@
     <script src="{{ asset('sbadmin') }}/js/demo/datatables-demo.js"></script>
 
     <!-- Area Stiker Tersembunyi yang Akan Dicetak -->
+<!-- Area Stiker Tersembunyi -->
 <div id="print-area" style="display: none;">
-    <div class="stiker-container text-center">
-        
-        <p style="margin: 2px 0; font-size: 10px;">#<span id="p-id"></span></p>
-        <p style="margin: 2px 0; font-size: 11px;"><span id="p-nama"></span></p>
-        <p style="margin: 2px 0; font-size: 11px;"><span id="p-media"></span></p>
-        <p style="margin: 2px 0; font-size: 10px;"><span id="p-phone"></span></p>
-        <p style="margin: 2px 0; font-size: 10px;"><span id="p-jabatan"></span></p>
+    <div class="stiker-container">
+        <div class="stiker-event"><span id="p-event"></span></div>
+        <hr class="stiker-line">
+        <div class="stiker-id"><span id="p-id"></span></div>
+        <div class="stiker-nama"><span id="p-nama"></span></div>
+        <div class="stiker-media"><span id="p-media"></span></div>
+        <div class="stiker-info">[<span id="p-phone"></span>]</div>
+        <div class="stiker-info"><span id="p-jabatan"></span></div>
     </div>
 </div>
 
-<!-- CSS Khusus Ukuran Stiker 5x4 cm -->
+<!-- CSS Khusus Stiker 5x4 cm -->
 <style>
 @media print {
-    body * {
-        visibility: hidden;
+    body > *:not(#print-area) {
+        display: none !important;
     }
-    #print-area, #print-area * {
-        visibility: visible;
-    }
+    
     #print-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 5cm;
-        height: 4cm;
         display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 4cm !important;
+        height: 5cm !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
+
     .stiker-container {
-        width: 5cm;
-        height: 4cm;
-        padding: 3mm;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-        overflow: hidden;
+        width: 4cm !important;
+        height: 5cm !important;
+        padding: 3mm 2mm !important;
+        box-sizing: border-box !important;
+        font-family: Arial, sans-serif !important;
+        text-align: center !important;
+        overflow: hidden !important;
+    }
+
+    .stiker-event { 
+        font-size: 10px !important; 
+        font-weight: bold !important; 
+        margin-bottom: 3px !important; 
+        text-transform: uppercase;
+    }
+    .stiker-line { 
+        margin: 2px 0 3px 0 !important; 
+        border-top: 1.5px solid #000 !important; 
+    }
+    .stiker-id { 
+        font-size: 11px !important; 
+        font-weight: bold !important; 
+        margin-bottom: 3px !important; 
+    }
+    .stiker-nama { 
+        font-size: 12px !important; 
+        font-weight: bold !important; 
+        margin-bottom: 3px !important; 
+    }
+    .stiker-media { 
+        font-size: 11px !important; 
+        font-weight: bold !important; 
+        margin-bottom: 3px !important; 
+    }
+    .stiker-info { 
+        font-size: 12px !important; 
+        margin-bottom: 2px !important; 
     }
 }
+
+/* Membalik ukuran halaman menjadi 4cm x 5cm agar posisinya berdiri tegak (Portrait) */
 @page {
-    size: 5cm 4cm;
+    size: 4cm 5cm;
     margin: 0;
 }
 </style>
@@ -371,7 +407,6 @@
 <!-- JavaScript untuk Menjalankan Print -->
 <script>
 function printStiker(id, nama, media, phone, jabatan, judul) {
-    document.getElementById('p-id').innerText = id;
     document.getElementById('p-nama').innerText = nama;
     document.getElementById('p-media').innerText = media;
     document.getElementById('p-phone').innerText = phone;
