@@ -329,9 +329,9 @@
 <div id="print-area" style="display: none;">
     <div class="stiker-container">
         <div class="stiker-event"><span id="p-event"></span></div>
-        <hr class="stiker-line">
         <div class="stiker-id"><span id="p-id"></span></div>
         <div class="stiker-nama"><span id="p-nama"></span></div>
+        <hr class="stiker-line">
         <div class="stiker-media"><span id="p-media"></span></div>
         <div class="stiker-info">[<span id="p-phone"></span>]</div>
         <div class="stiker-info"><span id="p-jabatan"></span></div>
