@@ -427,16 +427,16 @@
 
     <!-- POPUP MODAL -->
     <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/25 backdrop-blur-md" style="display: none;" x-transition.opacity>
-        <div @click.away="openModal = false" class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative" x-transition>
+        <div @click.away="openModal = false" class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative" x-transition>
             
             <!-- Tombol Tutup -->
             <button @click="openModal = false" class="absolute top-4 right-4 z-10 bg-black/60 text-white rounded-full p-2 hover:bg-amber-500 hover:text-slate-950 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
-            <!-- PERBAIKAN: Menggunakan object-contain agar seluruh isi gambar terlihat utuh tanpa terpotong -->
-            <div class="w-full h-80 sm:h-96 bg-black flex items-center justify-center overflow-hidden">
-                <img :src="activeEvent.image" alt="Detail Banner" class="w-full h-full object-contain object-center">
+            <!-- PERBAIKAN: Menggunakan aspect-square agar kotaknya kotak sempurna (1:1) mengikuti bentuk poster, tanpa ruang hitam di kiri-kanan -->
+            <div class="w-full aspect-square bg-black flex items-center justify-center overflow-hidden">
+                <img :src="activeEvent.image" alt="Detail Banner" class="w-full h-full object-cover object-center">
             </div>
 
             <!-- Konten Detail Teks -->
