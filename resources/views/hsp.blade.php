@@ -155,34 +155,42 @@
     </section>
 
     <!-- PORTFOLIO SECTION -->
-    <section id="portfolio" class="pt-32 px-4 max-w-7xl mx-auto relative z-10">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold mb-2 text-amber-400">A Glimpse Into Our Work</h2>
-            <p class="text-slate-300">Take a look at the events and discover more about our previous work.</p>
-        </div>
+<section id="portfolio" class="pt-32 px-4 max-w-7xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold mb-2 text-amber-400">A Glimpse Into Our Work</h2>
+        <p class="text-slate-300">Take a look at the events and discover more about our previous work.</p>
+    </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-            <!-- Event 1 -->
-            @foreach ($eventlama as $pastevent )
-                <div @click="activeEvent = { 
-                    title: '{{ $pastevent->judul_event }}', 
-                    category: '{{  $pastevent->nama_kategori }}', 
-                    image: '{{ asset('gambar_banner/' . $pastevent->gambar2) }}', 
-                    date: '{{ \Carbon\Carbon::parse($pastevent->tanggal)->format('j F Y') }}', 
-                    location: '{{ Str::title($pastevent->lokasi) }}' 
-                }; openModal = true" 
-                class="relative aspect-square rounded-xl overflow-hidden cursor-pointer group shadow-xl border border-slate-700/60 bg-black">
-                
-                <div class="absolute inset-0 bg-contain bg-no-repeat bg-center group-hover:scale-110 transition duration-500" style="background-image: url('{{ asset('gambar_banner/' . $pastevent->gambar2) }}')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
-                    <span class="text-[10px] text-amber-400 font-bold uppercase tracking-widest px-2 py-0.5 bg-amber-400/20 rounded w-max mb-1">{{  $pastevent->nama_kategori }}</span>
-                    <h3 class="text-base font-bold text-white leading-snug">{{ $pastevent->judul_event }}</h3>
-                    <p class="text-slate-300 text-xs mt-1">Detail &rarr;</p>
-                </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+        <!-- Event 1 -->
+        @foreach ($eventlama as $pastevent )
+            <div x-data="{ showText: false }" 
+                 @click="
+                    activeEvent = { 
+                        title: '{{ $pastevent->judul_event }}', 
+                        category: '{{  $pastevent->nama_kategori }}', 
+                        image: '{{ asset('gambar_banner/' . $pastevent->gambar2) }}', 
+                        date: '{{ \Carbon\Carbon::parse($pastevent->tanggal)->format('j F Y') }}', 
+                        location: '{{ Str::title($pastevent->lokasi) }}' 
+                    }; 
+                    showText = !showText;
+                 " 
+                 class="relative aspect-square rounded-xl overflow-hidden cursor-pointer group shadow-xl border border-slate-700/60 bg-black">
+            
+            <!-- Gambar Background / Poster -->
+            <div class="absolute inset-0 bg-contain bg-no-repeat bg-center group-hover:scale-110 transition duration-500" style="background-image: url('{{ asset('gambar_banner/' . $pastevent->gambar2) }}')"></div>
+            
+            <!-- Bagian Teks & Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-5"
+                 :class="showText ? 'opacity-100' : 'opacity-0 sm:opacity-0 sm:group-hover:opacity-100'">
+                <span class="text-[10px] text-amber-400 font-bold uppercase tracking-widest px-2 py-0.5 bg-amber-400/20 rounded w-max mb-1">{{  $pastevent->nama_kategori }}</span>
+                <h3 class="text-sm sm:text-base font-bold text-white leading-snug">{{ $pastevent->judul_event }}</h3>
+                <p class="text-slate-300 text-xs mt-1">Detail &rarr;</p>
             </div>
-            @endforeach
         </div>
-    </section>
+        @endforeach
+    </div>
+</section>
 
     <!-- SECTION MEET OUR TEAM (MIXED GEOMETRIC SHAPES & EQUAL) -->
     <section id="team" class="pt-32 pb-20 px-4 max-w-7xl mx-auto relative z-10">
