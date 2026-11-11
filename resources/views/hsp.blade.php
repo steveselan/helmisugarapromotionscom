@@ -425,32 +425,41 @@
         </div>
     </section>
 
-    <!-- POPUP MODAL -->
-    <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/25 backdrop-blur-md" style="display: none;" x-transition.opacity>
-        <div @click.away="openModal = false" class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative" x-transition>
+    <!-- MODAL DETAIL EVENT -->
+    <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" style="display: none;">
+        <div @click.away="openModal = false" class="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden max-w-lg w-full relative shadow-2xl">
             
-            <!-- Tombol Tutup -->
-            <button @click="openModal = false" class="absolute top-4 right-4 z-10 bg-black/60 text-white rounded-full p-2 hover:bg-amber-500 hover:text-slate-950 transition">
+            <!-- Tombol Close (X) -->
+            <button @click="openModal = false" class="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white rounded-full p-2 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            
-            <!-- PERBAIKAN: Menggunakan h-80 sm:h-96 dengan object-cover agar gambar melebar full menutupi area kotak modal -->
-            <div class="w-full h-80 sm:h-96 bg-black flex items-center justify-center overflow-hidden">
-                <img :src="activeEvent.image" alt="Detail Banner" class="w-full h-full object-cover object-top">
+
+            <!-- Area Gambar Poster -->
+            <!-- Perubahan ada di sini: menggunakan bg-contain dan bg-top agar posisi gambar naik ke atas dan tidak terpotong -->
+            <div class="w-full h-72 sm:h-96 bg-no-repeat bg-top bg-black" 
+                :style="'background-image: url(' + activeEvent.image + '); background-size: contain;'">
             </div>
 
-            <!-- Konten Detail Teks -->
-            <div class="p-6 sm:p-8">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs text-amber-400 font-bold uppercase tracking-widest px-2.5 py-1 bg-amber-400/10 rounded border border-amber-400/20" x-text="activeEvent.category"></span>
-                    <span class="text-xs text-slate-300 font-medium" x-text="activeEvent.date"></span>
+            <!-- Bagian Informasi Detail -->
+            <div class="p-6 bg-slate-900">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-amber-400 font-bold uppercase tracking-widest px-2.5 py-1 bg-amber-400/20 rounded" x-text="activeEvent.category"></span>
+                    <span class="text-xs text-slate-300" x-text="activeEvent.date"></span>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2" x-text="activeEvent.title"></h3>
-                <div class="flex items-center justify-between pt-4 border-t border-slate-700 text-xs text-slate-300">
-                    <span>Location: <strong class="text-white" x-text="activeEvent.location"></strong></span>
-                    <button @click="openModal = false" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-2 rounded-lg transition">Close</button>
+                
+                <h3 class="text-xl font-bold text-white mb-3 leading-snug" x-text="activeEvent.title"></h3>
+                
+                <p class="text-sm text-slate-300 mb-6 flex items-center gap-1">
+                    <span class="font-semibold text-white">Location:</span> <span x-text="activeEvent.location"></span>
+                </p>
+
+                <div class="flex justify-end">
+                    <button @click="openModal = false" class="px-5 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl transition text-sm">
+                        Close
+                    </button>
                 </div>
             </div>
+
         </div>
     </div>
     <!-- SCRIPT HERO SLIDER -->
